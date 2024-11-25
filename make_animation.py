@@ -23,3 +23,5 @@ def make_gif():
 
 if __name__ == "__main__":
     make_gif()
+
+#TEST
