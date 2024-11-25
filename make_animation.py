@@ -13,7 +13,6 @@ def compare(x, y):
     if int(y)>int(x):
         return y
         
-# this is just a test
 
 def make_gif():
     frames = [Image.open(image) for image in sorted(glob.glob("*.png"), key=compare)]
