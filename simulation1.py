@@ -7,6 +7,8 @@ a_0 = 1.2e-10   # Milgrom's constant (m/s^2)
 M_0 = 1.988e30  # Solar mass (kg)
 ly = 9.416e15   # Light year (m)
 
+path = 'images/'
+
 # Define the Galaxy class
 class Galaxy:
     def __init__(self, mass, position, velocity):
@@ -21,6 +23,7 @@ def gravitational_force(galaxy1, galaxy2):
     r_mag = np.linalg.norm(r_vec)
     if r_mag == 0:
         return np.zeros(2)
+    
     #force_magnitude = G * galaxy1.mass * galaxy2.mass / r_mag**2 #NEWTON
     force_magnitude = 2 / 3 * (G*a_0)**(1/2) * ((galaxy1.mass + galaxy2.mass)**(3/2) - galaxy1.mass**(3/2) - galaxy2.mass**(3/2)) / r_mag #MOND
     
@@ -77,7 +80,6 @@ def runge_kutta4(galaxies, dt):
         galaxy.position = (k1_p[i] + 2 * k2_p[i] + 2 * k3_p[i] + k4_p[i]) / 6
 
 def plotting():
-    
     plt.xlabel('X position (meters)')
     plt.ylabel('Y position (meters)')
     plt.title('Galaxies in Local Cluster Simulation (MOND)')
@@ -87,7 +89,7 @@ def plotting():
     plt.ylim([-1e22,1e22])
 
 # Initialize the galaxies (mass in kg, position in meters, velocity in m/s)
-num_galaxies = 3  # Number of galaxies in the cluster
+num_galaxies = 2  # Number of galaxies in the cluster
 galaxies = []
 
 # Example: Initialize galaxies in a more stable configuration (closer, slower)
@@ -100,8 +102,9 @@ for i in range(num_galaxies):
 
 # Time parameters
 dt = 1e14  # Time step
-total_time = 1e18  # Total time
+total_time = 1e19  # Total time
 steps = int(total_time / dt)
+printstep = 1e2
 
 # List for storing positions for plotting later
 positions = {i: [] for i in range(len(galaxies))}
@@ -112,7 +115,8 @@ for step in range(steps):
     for i, galaxy in enumerate(galaxies):
         positions[i].append(galaxy.position.copy())
         
-    if step%1e2==0 and step != 0:
+    # Save an image every so often for an animation
+    if step%printstep==0 and step != 0:
         temp = {i: [] for i in range(len(galaxies))}
         for i in range(len(galaxies)):
             temp[i] = np.array(positions[i])
@@ -123,7 +127,9 @@ for step in range(steps):
             plt.scatter(temp[i][-1,0], temp[i][-1,1])
         
         plotting()
-        plt.savefig(f'{int(step/100)}.png')
+        temp = str(int(step/printstep))
+        name = (len(str(int(steps/printstep)))-len(temp))*'0'+temp
+        plt.savefig(path+f'{name}.png')
         plt.close()
         print(step)
 
@@ -138,5 +144,5 @@ for i in range(len(galaxies)):
     plt.scatter(positions[i][-1,0], positions[i][-1,1])
 
 plotting()
-plt.savefig('final.png')
+plt.savefig(path+f'{int((step+1)/printstep)}.png')
 plt.show()
