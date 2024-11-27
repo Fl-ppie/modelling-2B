@@ -3,9 +3,17 @@
 Created on Tue Nov 26 20:20:00 2024
 
 @author: Fardeen
-"""
 
-"""
+TO DO:
+    - Debuggen
+    - Deep MOND module implementeren
+    - Modulaire code
+    - Data import van galaxies beter werkbaar
+    - test
+    
+    dfsfdjksdkjsd
+    dsksdjkfsdjksdk
+
 Preparations
 """
 import numpy as np
