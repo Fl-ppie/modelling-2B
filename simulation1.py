@@ -7,7 +7,7 @@ a_0 = 1.2e-10   # Milgrom's constant (m/s^2)
 M_0 = 1.988e30  # Solar mass (kg)
 ly = 9.416e15   # Light year (m)
 
-path = 'images/'
+path = 'images/frames/'
 
 # Define the Galaxy class
 class Galaxy:
