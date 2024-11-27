@@ -9,11 +9,10 @@ TO DO:
     - Deep MOND module implementeren
     - Modulaire code
     - Data import van galaxies beter werkbaar
-    - test
-    
-    dfsfdjksdkjsd
-    dsksdjkfsdjksdk
+    - NFW profile for dark matter halo beter werkbaar
+"""
 
+"""
 Preparations
 """
 import numpy as np
