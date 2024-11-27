@@ -88,51 +88,51 @@ def plotting():
     plt.xlim([-1e22,1e22])
     plt.ylim([-1e22,1e22])
 
-# Initialize the galaxies (mass in kg, position in meters, velocity in m/s)
-num_galaxies = 2  # Number of galaxies in the cluster
+
 galaxies = []
 
-# Example: Initialize galaxies in a more stable configuration (closer, slower)
-np.random.seed(42)  # Set seed for reproducibility
-for i in range(num_galaxies):
-    mass = np.random.uniform(1e9*M_0, 1e9*M_0)
-    position = np.random.uniform(-1e6*ly, 1e6*ly, size=2)
-    velocity = np.random.uniform(-1e4, 1e4, size=2)
-    galaxies.append(Galaxy(mass, position, velocity))
+mass = 1e9*M_0
+position = 1e6*ly
+
+# Velocity for circular orbit
+velocity = 2*(mass+mass)*(G*a_0)**(1/2)*((mass+mass)**(3/2)-mass**(3/2)-mass**(3/2))/(3*mass*mass)
+
+galaxies = [Galaxy(mass,np.array(position,0),np.array(velocity,0)),
+            Galaxy(mass,np.array(-position,0),np.array(-velocity,0))]
 
 # Time parameters
-dt = 1e14  # Time step
-total_time = 1e19  # Total time
+dt = 1e12  # Time step
+total_time = 1e18  # Total time
 steps = int(total_time / dt)
 printstep = 1e2
 
 # List for storing positions for plotting later
-positions = {i: [] for i in range(len(galaxies))}
+positions = [[] for i in range(len(galaxies))]
 
 # Run the simulation for the specified time
 for step in range(steps):
     runge_kutta4(galaxies, dt)
     for i, galaxy in enumerate(galaxies):
         positions[i].append(galaxy.position.copy())
-        
-    # Save an image every so often for an animation
-    if step%printstep==0 and step != 0:
-        temp = {i: [] for i in range(len(galaxies))}
-        for i in range(len(galaxies)):
-            temp[i] = np.array(positions[i])
+'''
+# Save an image every so often for an animation
+if step%printstep==0 and step != 0:
+    temp = {i: [] for i in range(len(galaxies))}
+    for i in range(len(galaxies)):
+        temp[i] = np.array(positions[i])
     
-        plt.figure(figsize=(8, 8))
-        for i in range(len(galaxies)):
-            plt.plot(temp[i][-1000:, 0], temp[i][-1000:, 1], label=f"Galaxy {i+1}")
-            plt.scatter(temp[i][-1,0], temp[i][-1,1])
+    plt.figure(figsize=(8, 8))
+    for i in range(len(galaxies)):
+        plt.plot(temp[i][-1000:, 0], temp[i][-1000:, 1], label=f"Galaxy {i+1}")
+        plt.scatter(temp[i][-1,0], temp[i][-1,1])
         
-        plotting()
-        temp = str(int(step/printstep))
-        name = (len(str(int(steps/printstep)))-len(temp))*'0'+temp
-        plt.savefig(path+f'{name}.png')
-        plt.close()
-        print(step)
-
+    plotting()
+    temp = str(int(step/printstep))
+    name = (len(str(int(steps/printstep)))-len(temp))*'0'+temp
+    plt.savefig(path+f'{name}.png')
+    plt.close()
+    print(step)
+'''
 # Convert positions to numpy arrays for easy plotting
 for i in range(len(galaxies)):
     positions[i] = np.array(positions[i])
@@ -144,5 +144,5 @@ for i in range(len(galaxies)):
     plt.scatter(positions[i][-1,0], positions[i][-1,1])
 
 plotting()
-plt.savefig(path+f'{int((step+1)/printstep)}.png')
+#plt.savefig(path+f'{int((step+1)/printstep)}.png')
 plt.show()
