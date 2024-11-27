@@ -24,8 +24,8 @@ def gravitational_force(galaxy1, galaxy2):
     if r_mag == 0:
         return np.zeros(2)
     
-    force_magnitude = G * galaxy1.mass * galaxy2.mass / r_mag**2 #NEWTON
-    #force_magnitude = 2 / 3 * (G*a_0)**(1/2) * ((galaxy1.mass + galaxy2.mass)**(3/2) - galaxy1.mass**(3/2) - galaxy2.mass**(3/2)) / r_mag #MOND
+    #force_magnitude = G * galaxy1.mass * galaxy2.mass / r_mag**2 #NEWTON
+    force_magnitude = 2 / 3 * (G*a_0)**(1/2) * ((galaxy1.mass + galaxy2.mass)**(3/2) - galaxy1.mass**(3/2) - galaxy2.mass**(3/2)) / r_mag #MOND
     
     force_vector = force_magnitude * r_vec / r_mag  # Force vector pointing towards the other galaxy
     return force_vector
@@ -104,8 +104,8 @@ galaxies = [Galaxy(mass,[position,0],[0,velocity]),
             Galaxy(mass,[-position,0],[0,-velocity])]
 
 # Time parameters
-dt = 1e13  # Time step
-total_time = 1e18  # Total time
+dt = 1e14  # Time step
+total_time = 1e20  # Total time
 steps = int(total_time / dt)
 printstep = 1e4
 
@@ -121,6 +121,7 @@ for step in range(steps):
     runge_kutta4(galaxies, dt)
     for i, galaxy in enumerate(galaxies):
         positions[i].append(galaxy.position.copy())
+    
     
     distance.append(get_distance(positions[0][-1],positions[1][-1]))
     
