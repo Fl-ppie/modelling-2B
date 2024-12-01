@@ -29,7 +29,7 @@ if __name__=='__main__':
     total_time=1e19
 
     # Run both models
-    positions_newtonian = Sim.run_simulation(Data.galaxies.copy(), mode="newtonian", dt=dt, total_time=total_time)
+    positions_newtonian = Sim.run_simulation(Data.galaxies.deepcopy(), mode="newtonian", dt=dt, total_time=total_time)
     
     # Save positions for later use in animation
     np.save(filepath+'positions_newtonian', positions_newtonian)
@@ -44,7 +44,7 @@ if __name__=='__main__':
 
     #positions_dark_matter = run_simulation(galaxies, mode="dark matter")
     
-    positions_mond = Sim.run_simulation(Data.galaxies.copy(), mode="mond", dt=dt, total_time=total_time)
+    positions_mond = Sim.run_simulation(Data.galaxies.deepcopy(), mode="mond", dt=dt, total_time=total_time)
     
     # Save positions for later use in animation
     np.save(filepath+'positions_mond', positions_mond)
