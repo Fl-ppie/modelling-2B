@@ -25,6 +25,9 @@ class Galaxy:
         self.position = np.array(position, dtype=np.float64)  # in meters
         self.velocity = np.array(velocity, dtype=np.float64)  # in meters per second
         self.acceleration = np.zeros(2, dtype=np.float64)  # in m/s^2
+    
+    def __str__(self):
+        return f"mass: {self.mass}\nposition: {self.position}\nvelocity: {self.velocity}\nacceleration: {self.acceleration}\n"
 
 # Dark matter halo parameters
 M_dyn = 6.02e10 * M_sun  # Total dynamical mass

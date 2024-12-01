@@ -13,11 +13,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+dt=1e13
+total_time=1e18
+
 # Run both models
-positions_newtonian = Sim.run_simulation(Data.galaxies, mode="newtonian")
+positions_newtonian = Sim.run_simulation(Data.galaxies, mode="newtonian", dt=dt, total_time=total_time)
 
 plt.figure(figsize=(12, 6))
-for i in range(len(Sim.galaxies)):
+for i in range(len(Data.galaxies)):
     plt.plot(positions_newtonian[i][:, 0], positions_newtonian[i][:, 1], label=f"Galaxy {i+1} Newtonian")
 
 plt.xlabel('X Position (m)')
@@ -29,7 +32,7 @@ plt.axis('equal')
 plt.show()
 
 #positions_dark_matter = run_simulation(galaxies, mode="dark matter")
-positions_mond = Sim.run_simulation(Data.galaxies, mode="mond")
+positions_mond = Sim.run_simulation(Data.galaxies, mode="mond", dt=dt, total_time=total_time)
 
 plt.figure(figsize=(12, 6))
 for i in range(len(Data.galaxies)):
@@ -62,7 +65,7 @@ plt.grid(True)
 plt.axis('equal')
 plt.show()
 
-
+"""
 plt.figure(figsize=(12, 6))
 for i in range(len(Data.galaxies)):
     plt.plot(positions_mond[i][:, 0], positions_mond[i][:, 1], label=f"Galaxy {i+1} MOND", linestyle="--")
@@ -75,7 +78,7 @@ plt.grid(True)
 plt.axis('equal')
 plt.show()
 
-"""
+
 plt.figure(figsize=(12, 6))
 for i in range(len(galaxies)):
     plt.plot(positions_dark_matter[i][:, 0], positions_dark_matter[i][:, 1], label=f"Galaxy {i+1} Dark Matter", linestyle=":")

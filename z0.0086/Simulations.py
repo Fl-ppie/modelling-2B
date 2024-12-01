@@ -22,10 +22,10 @@ Running the simulation
 # Simulation parameters
 dt = 1e13  # Time step (seconds) - smaller to improve stability
 total_time = 1e19  # Total time (in seconds) ~58 days
-steps = int(total_time / dt)
 
 # Run simulation
-def run_simulation(galaxies, mode="simple"):
+def run_simulation(galaxies, mode="simple", dt=1e13, total_time=1e19):
+    steps = int(total_time / dt)
     positions = {i: [] for i in range(len(galaxies))}
     for step in range(steps):
         if step % 100 == 0:
