@@ -33,6 +33,4 @@ def run_simulation(galaxies, mode="simple", dt=1e13, total_time=1e19):
         GD.runge_kutta4(galaxies, dt, mode=mode)
         for i, galaxy in enumerate(galaxies):
             positions[i].append(galaxy.position.copy())
-    #for i in range(len(galaxies)):
-    #    positions[i] = np.array(positions[i])
     return np.array(positions)

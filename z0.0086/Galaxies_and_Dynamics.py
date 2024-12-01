@@ -99,6 +99,10 @@ def dark_matter_acceleration(position):
     enclosed_mass = M_dark * (r / r_virial)**2  # Simplified density profile
     return -G * enclosed_mass / r**2 * position / r
 
+# Interpolation function
+def mu(x):
+    return x/(x+a0)
+
 # Total acceleration combining Newtonian, MOND, and dark matter
 def total_acceleration(galaxies, mode="simple"):
     accelerations = []
@@ -116,10 +120,9 @@ def total_acceleration(galaxies, mode="simple"):
                 F_vec = F_newton * r_vec / r_mag
                 
                 # Apply MOND modification if enabled
-                if mode != "newtonian":
+                if mode == "mond":
                     a_newton = F_newton / galaxy.mass
-                    mu = a_newton / (a_newton + a0)  # Simple interpolation
-                    F_vec *= mu
+                    F_vec *= mu(a_newton)
                 
                 total_force += F_vec
         

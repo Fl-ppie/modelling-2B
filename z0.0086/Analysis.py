@@ -12,59 +12,65 @@ import Simulations as Sim
 import numpy as np
 import matplotlib.pyplot as plt
 
+def plot_formatting(lims=[[None,None],[None,None]]):    
+    plt.xlabel('X Position (m)')
+    plt.ylabel('Y Position (m)')
+    plt.legend()
+    plt.title('Trajectories of Dwarf Galaxies')
+    plt.grid(True)
+    
+    plt.xlim(lims[0])
+    plt.ylim(lims[1])
 
-dt=1e14
-total_time=1e18
+if __name__=='__main__':
+    filepath = 'position_data/'
 
-# Run both models
-positions_newtonian = Sim.run_simulation(Data.galaxies, mode="newtonian", dt=dt, total_time=total_time)
+    dt=1e13
+    total_time=1e19
 
-plt.figure(figsize=(12, 6))
-for i in range(len(Data.galaxies)):
-    plt.plot(positions_newtonian[i][:, 0], positions_newtonian[i][:, 1], label=f"Galaxy {i+1} Newtonian")
+    # Run both models
+    positions_newtonian = Sim.run_simulation(Data.galaxies.copy(), mode="newtonian", dt=dt, total_time=total_time)
+    
+    # Save positions for later use in animation
+    np.save(filepath+'positions_newtonian', positions_newtonian)
 
-plt.xlabel('X Position (m)')
-plt.ylabel('Y Position (m)')
-plt.legend()
-plt.title('Trajectories of Dwarf Galaxies')
-plt.grid(True)
-plt.axis('equal')
-plt.show()
+    # Plot Newtonian positions
+    plt.figure(figsize=(12, 6))
+    for i in range(len(Data.galaxies)):
+        plt.plot(positions_newtonian[i][:, 0], positions_newtonian[i][:, 1], label=f"Galaxy {i+1} Newtonian")
 
-#positions_dark_matter = run_simulation(galaxies, mode="dark matter")
-positions_mond = Sim.run_simulation(Data.galaxies, mode="mond", dt=dt, total_time=total_time)
+    plot_formatting()
+    plt.show()
 
-plt.figure(figsize=(12, 6))
-for i in range(len(Data.galaxies)):
-    plt.plot(positions_mond[i][:, 0], positions_mond[i][:, 1], label=f"Galaxy {i+1} MOND", linestyle="--")
+    #positions_dark_matter = run_simulation(galaxies, mode="dark matter")
+    
+    positions_mond = Sim.run_simulation(Data.galaxies.copy(), mode="mond", dt=dt, total_time=total_time)
+    
+    # Save positions for later use in animation
+    np.save(filepath+'positions_mond', positions_mond)
+    
+    # Plot MOND positions
+    plt.figure(figsize=(12, 6))
+    for i in range(len(Data.galaxies)):
+        plt.plot(positions_mond[i][:, 0], positions_mond[i][:, 1], label=f"Galaxy {i+1} MOND", linestyle="--")
+    
+    plot_formatting()
+    plt.show()
 
-plt.xlabel('X Position (m)')
-plt.ylabel('Y Position (m)')
-plt.legend()
-plt.title('Trajectories of Dwarf Galaxies')
-plt.grid(True)
-plt.axis('equal')
-plt.show()
 
-
-
-"""
-Plotting the results
-"""
-plt.figure(figsize=(12, 6))
-for i in range(len(Data.galaxies)):
-    plt.plot(positions_newtonian[i][:, 0], positions_newtonian[i][:, 1], label=f"Galaxy {i+1} Newtonian")
-    plt.plot(positions_mond[i][:, 0], positions_mond[i][:, 1], label=f"Galaxy {i+1} MOND", linestyle="--")
-    #plt.plot(positions_dark_matter[i][:, 0], positions_dark_matter[i][:, 1], label=f"Galaxy {i+1} Dark Matter", linestyle=":")
-
-plt.xlabel('X Position (m)')
-plt.ylabel('Y Position (m)')
-plt.legend()
-plt.title('Trajectories of Dwarf Galaxies')
-plt.grid(True)
-plt.axis('equal')
-plt.show()
-
+    """
+    Plotting the results
+    """
+    # Plot both force types in one
+    plt.figure(figsize=(12, 6))
+    for i in range(len(Data.galaxies)):
+        plt.plot(positions_newtonian[i][:, 0], positions_newtonian[i][:, 1], label=f"Galaxy {i+1} Newtonian")
+        plt.plot(positions_mond[i][:, 0], positions_mond[i][:, 1], label=f"Galaxy {i+1} MOND", linestyle="--")
+        #plt.plot(positions_dark_matter[i][:, 0], positions_dark_matter[i][:, 1], label=f"Galaxy {i+1} Dark Matter", linestyle=":")
+        
+    plot_formatting()
+    plt.show()
+        
 """
 plt.figure(figsize=(12, 6))
 for i in range(len(Data.galaxies)):
