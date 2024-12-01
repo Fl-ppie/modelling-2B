@@ -13,7 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-dt=1e13
+dt=1e14
 total_time=1e18
 
 # Run both models

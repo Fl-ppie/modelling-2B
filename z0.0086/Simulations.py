@@ -26,13 +26,13 @@ total_time = 1e19  # Total time (in seconds) ~58 days
 # Run simulation
 def run_simulation(galaxies, mode="simple", dt=1e13, total_time=1e19):
     steps = int(total_time / dt)
-    positions = {i: [] for i in range(len(galaxies))}
+    positions = [[] for i in range(len(galaxies))]
     for step in range(steps):
         if step % 100 == 0:
             print(f"Step {step}/{steps}")
         GD.runge_kutta4(galaxies, dt, mode=mode)
         for i, galaxy in enumerate(galaxies):
             positions[i].append(galaxy.position.copy())
-    for i in range(len(galaxies)):
-        positions[i] = np.array(positions[i])
-    return positions
+    #for i in range(len(galaxies)):
+    #    positions[i] = np.array(positions[i])
+    return np.array(positions)
