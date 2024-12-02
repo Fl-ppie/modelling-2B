@@ -101,7 +101,7 @@ def dark_matter_acceleration(position):
 
 # Interpolation function
 def mu(x):
-    return x/(x+a0)
+    return x/(x+1)
 
 # Total acceleration combining Newtonian, MOND, and dark matter
 def total_acceleration(galaxies, mode="simple"):
@@ -122,7 +122,7 @@ def total_acceleration(galaxies, mode="simple"):
                 # Apply MOND modification if enabled
                 if mode == "mond":
                     a_newton = F_newton / galaxy.mass
-                    F_vec *= mu(a_newton)
+                    F_vec *= mu(a_newton/a0)
                 
                 total_force += F_vec
         
