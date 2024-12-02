@@ -4,6 +4,8 @@ Created on Wed Nov 27 11:19:54 2024
 
 @author: Fardeen
 To do:
+    -correctie voor verschuiving massamiddelpunt
+    
     
 """
 
@@ -100,8 +102,8 @@ def dark_matter_acceleration(position):
     return -G * enclosed_mass / r**2 * position / r
 
 # Interpolation function
-def mu(x):
-    return x/(x+1)
+def nu(x):
+    return x/2*(1+4/x)**(1/2)
 
 # Total acceleration combining Newtonian, MOND, and dark matter
 def total_acceleration(galaxies, mode="simple"):
@@ -122,7 +124,7 @@ def total_acceleration(galaxies, mode="simple"):
                 # Apply MOND modification if enabled
                 if mode == "mond":
                     a_newton = F_newton / galaxy.mass
-                    F_vec *= mu(a_newton/a0)
+                    F_vec *= nu(a_newton/a0)
                 
                 total_force += F_vec
         
