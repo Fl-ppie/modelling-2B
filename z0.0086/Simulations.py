@@ -27,10 +27,11 @@ total_time = 1e19  # Total time (in seconds) ~58 days
 def run_simulation(galaxies, mode="simple", dt=1e13, total_time=1e19):
     steps = int(total_time / dt)
     positions = [[] for i in range(len(galaxies))]
+    energy = []
     for step in range(steps):
         if step % 100 == 0:
             print(f"Step {step}/{steps}")
-        GD.runge_kutta4(galaxies, dt, mode=mode)
+        energy.append(GD.runge_kutta4(galaxies, dt, mode=mode))
         for i, galaxy in enumerate(galaxies):
             positions[i].append(galaxy.position.copy())
-    return np.array(positions)
+    return np.array(positions), np.array(energy)
