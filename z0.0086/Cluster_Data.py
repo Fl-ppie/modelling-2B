@@ -10,6 +10,7 @@ To Do:
 
 import Galaxies_and_Dynamics as GD
 import numpy as np
+import numba
 
 # Constants
 M_sun = 1.989e30  # Solar mass in kg
@@ -74,23 +75,3 @@ for galaxy in galaxy_data:
     print(f"  Relative Velocity: {galaxy['velocity_relative']} km/s")
     print(f"  Velocity x: {galaxy['velocity_x']:.2f} km/s")
     print(f"  Velocity y: {galaxy['velocity_y']:.2f} km/s")
-
-
-
-"""
-galaxy_data = [
-    {"mass": 7.87e7 * M_sun, "position": [-77, 0], "velocity": [0, -33]},  # D1
-    {"mass": 2.75e8 * M_sun, "position": [0, 0], "velocity": [0, 0]},      # D2
-    {"mass": 7.65e7 * M_sun, "position": [10.3, -10.3], "velocity": [17, -30]},  # D3
-    {"mass": 1.47e7 * M_sun, "position": [20.6, -20.6], "velocity": [15, -27]},  # D4
-    {"mass": 7.87e7 * M_sun, "position": [99, -77], "velocity": [20, -10]},  # D5
-]
-
-# Convert positions from kpc to meters, velocities from km/s to m/s
-for galaxy in galaxy_data:
-    galaxy["position"] = np.array(galaxy["position"]) * kpc_to_m
-    galaxy["velocity"] = np.array(galaxy["velocity"]) * 1e3
-
-# Create Galaxy objects
-galaxies = [Galaxy(g["mass"], g["position"], g["velocity"]) for g in galaxy_data]
-"""
