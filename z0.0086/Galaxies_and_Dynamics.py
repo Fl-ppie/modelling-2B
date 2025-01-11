@@ -24,7 +24,7 @@ class Galaxy:
         self.mass = mass  # in kg
         self.position = np.array(position, dtype=np.float64)  # in meters
         self.velocity = np.array(velocity, dtype=np.float64)  # in meters per second
-        self.acceleration = np.zeros(2, dtype=np.float64)  # in m/s^2
+        self.acceleration = np.zeros(3, dtype=np.float64)  # in m/s^2
     
     def __str__(self):
         return f"mass: {self.mass}\nposition: {self.position}\nvelocity: {self.velocity}\nacceleration: {self.acceleration}\n"
@@ -50,7 +50,7 @@ def total_acceleration(galaxies, mode):
     num_galaxies = len(galaxies)
     positions = np.array([g.position for g in galaxies])
     masses = np.array([g.mass for g in galaxies])
-    accelerations = np.zeros((num_galaxies, 2), dtype=np.float64)
+    accelerations = np.zeros((num_galaxies, 3), dtype=np.float64)
     
     a0_inv = 1 / a0 if mode == "mond" else None
     
@@ -73,7 +73,8 @@ def total_acceleration(galaxies, mode):
         accelerations[i] = g
     
     """
-    # Compute system-level properties
+    Corrections for (angular) momentum preservation
+    """
     total_mass = np.sum(masses)
     center_of_mass = np.sum(masses[:, None] * positions, axis=0) / total_mass
     total_force = np.sum(masses[:, None] * accelerations, axis=0)
@@ -82,31 +83,23 @@ def total_acceleration(galaxies, mode):
     T_1 = np.sum(
         masses[:, None] * np.cross(positions, accelerations), axis=0
     )
-    inertia_tensor = np.sum(
-        masses[:, None, None] * np.einsum('ij,ik->ijk', positions, positions), axis=0
-    )
     
-    print(center_of_mass)
-    print(total_force)
-    print(np.cross(center_of_mass, total_force))
-    
+    inertia_tensor = np.zeros((3, 3), dtype=np.float64)
+
+    for i in range(len(masses)):
+        outer_product = np.outer(positions[i], positions[i])
+        inertia_tensor += masses[i] * outer_product    
     
     T = T_1 - np.cross(center_of_mass, total_force)
-    print(T)
-    print(np.trace(inertia_tensor) * np.eye(2) - inertia_tensor)
-    B = np.linalg.solve(
-        np.trace(inertia_tensor) * np.eye(2) - inertia_tensor,
-        T
-    )
-    
+    B = np.matmul(np.linalg.inv(np.trace(inertia_tensor) * np.eye(3) - inertia_tensor), T)
     
     A = total_force / total_mass
     
     # Adjust accelerations for MOND
     if mode == "mond":
         for i in range(num_galaxies):
-            accelerations[i] -= A + np.cross(B, positions[i] - center_of_mass)
-    """
+            accelerations[i] -= (A + np.cross(B, (positions[i] - center_of_mass)))
+    
     return accelerations
 
 """
@@ -144,7 +137,7 @@ def runge_kutta4(galaxies, dt, mode="simple"):
         galaxy.position = (k1_p[i] + 2 * k2_p[i] + 2 * k3_p[i] + k4_p[i]) / 6
 
     kinetic_energy=0
-    center_of_mass=np.array([0,0],dtype='float64')
+    center_of_mass=np.array([0,0,0],dtype='float64')
     total_mass=0
     for galaxy in galaxies:
         kinetic_energy+=galaxy.kinetic_energy()

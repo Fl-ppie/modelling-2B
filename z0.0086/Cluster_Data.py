@@ -31,11 +31,11 @@ def dms_to_deg(d, m, s):
 """
 
 galaxy_data = [
-    {"mass": 8.29e7 * M_sun, "position": [-77, 0], "velocity": 2618, "ra_hms": (12, 43, 59), "dec_dms": (62, 20, 0)},  # D1
-    {"mass": 2.75e8 * M_sun, "position": [0, 0], "velocity": 2624, "ra_hms": (12, 44, 12), "dec_dms": (62, 14, 51)},  # D2
-    {"mass": 7.65e7 * M_sun, "position": [10.3, -10.3], "velocity": 2567, "ra_hms": (12, 44, 12), "dec_dms": (62, 10, 19)},  # D3
-    {"mass": 1.47e7 * M_sun, "position": [20.6, -20.6], "velocity": 2550, "ra_hms": (12, 44, 20), "dec_dms": (62, 9, 58)},  # D4
-    {"mass": 7.87e7 * M_sun, "position": [99, -77], "velocity": 2610, "ra_hms": (12, 44, 23), "dec_dms": (62, 3, 6)},  # D5
+    {"mass": 8.29e7 * M_sun, "position": [-77, 0,0], "velocity": 2618, "ra_hms": (12, 43, 59), "dec_dms": (62, 20, 0)},  # D1
+    {"mass": 2.75e8 * M_sun, "position": [0, 0,0], "velocity": 2624, "ra_hms": (12, 44, 12), "dec_dms": (62, 14, 51)},  # D2
+    {"mass": 7.65e7 * M_sun, "position": [10.3, -10.3,0], "velocity": 2567, "ra_hms": (12, 44, 12), "dec_dms": (62, 10, 19)},  # D3
+    {"mass": 1.47e7 * M_sun, "position": [20.6, -20.6,0], "velocity": 2550, "ra_hms": (12, 44, 20), "dec_dms": (62, 9, 58)},  # D4
+    {"mass": 7.87e7 * M_sun, "position": [99, -77,0], "velocity": 2610, "ra_hms": (12, 44, 23), "dec_dms": (62, 3, 6)},  # D5
 ]
 
 # Convert R.A. and Decl. to degrees and then to radians
@@ -62,7 +62,7 @@ for galaxy in galaxy_data:
 # Convert positions from kpc to meters, velocities from km/s to m/s
 for galaxy in galaxy_data:
     galaxy["position"] = np.array(galaxy["position"]) * kpc_to_m
-    galaxy["velocity"] = np.array([galaxy["velocity_x"], galaxy["velocity_y"]]) * 1e3  # Convert to m/s
+    galaxy["velocity"] = np.array([galaxy["velocity_x"], galaxy["velocity_y"], 0.01]) * 1e3  # Convert to m/s
 
 # Create Galaxy objects
 galaxies = [GD.Galaxy(g["mass"], g["position"], g["velocity"]) for g in galaxy_data]
