@@ -4,7 +4,6 @@ Created on Wed Nov 27 11:19:54 2024
 
 @author: Fardeen
 To do:
-    -correctie voor verschuiving massamiddelpunt
     
     
 """
@@ -16,7 +15,6 @@ M_sun = 1.989e30  # Solar mass in kg
 kpc_to_m = 3.086e19  # Kiloparsec to meters
 G = 6.67430e-11  # Gravitational constant (m^3 kg^-1 s^-2)
 a0 = 1.2e-10  # MOND acceleration threshold (m/s^2)
-
 
 """
 Creating the Galaxy-class and dynamics on galaxies
@@ -44,48 +42,71 @@ class Galaxy:
         #(-v_x*y+v_y*x)/r^2
         return (-self.velocity[0]*self.position[1]+self.velocity[1]*self.position[0])/self.r()**2
 
-# Dark matter halo parameters
-M_dyn = 6.02e10 * M_sun  # Total dynamical mass
-M_baryonic = 2.6e9 * M_sun  # Total baryonic mass
-M_dark = M_dyn - M_baryonic  # Dark matter mass
-r_virial = 154 * kpc_to_m / 2  # Half of the spatial span (virial radius)
-# Dark matter acceleration
-def dark_matter_acceleration(position):
-    r = np.linalg.norm(position)
-    if r == 0:
-        return np.zeros(2)
-    enclosed_mass = M_dark * (r / r_virial)**2  # Simplified density profile
-    return -G * enclosed_mass / r**2 * position / r
-
 # Interpolation function
-def nu(x):
-    return x/(1+x)
+def nu(y):
+    return np.sqrt(0.5+0.5*np.sqrt(1+4/y**2))
 
-# Total acceleration combining Newtonian, MOND, and dark matter
-def total_acceleration(galaxies, mode="simple"):
-    accelerations = []
-    for galaxy in galaxies:
-        total_force = np.zeros(2)
-        for other_galaxy in galaxies:
-            if galaxy != other_galaxy:
-                r_vec = other_galaxy.position - galaxy.position
-                r_mag = np.linalg.norm(r_vec)
-                if r_mag == 0:
-                    continue
-                
-                # Newtonian gravitational force
-                F_newton = G * galaxy.mass * other_galaxy.mass / r_mag**2
-                F_vec = F_newton * r_vec / r_mag
-                
-                # Apply MOND modification if enabled
-                if mode == "mond":
-                    a_newton = F_newton / galaxy.mass
-                    F_vec *= nu(a_newton/a0)
-                
-                total_force += F_vec
-        # Add dark matter contribution
-        #total_force += dark_matter_acceleration(galaxy.position) * galaxy.mass
-        accelerations.append(total_force / galaxy.mass)
+def total_acceleration(galaxies, mode):
+    num_galaxies = len(galaxies)
+    positions = np.array([g.position for g in galaxies])
+    masses = np.array([g.mass for g in galaxies])
+    accelerations = np.zeros((num_galaxies, 2), dtype=np.float64)
+    
+    a0_inv = 1 / a0 if mode == "mond" else None
+    
+    for i, galaxy in enumerate(galaxies):
+        r_vecs = positions - positions[i]  # Vector from galaxy `i` to others
+        r_mags = np.linalg.norm(r_vecs, axis=1)  # Magnitude of r_vecs
+        valid = r_mags > 0  # Avoid division by zero for self-interaction
+        r_vecs = r_vecs[valid]
+        r_mags = r_mags[valid]
+        masses_valid = masses[valid]
+        
+        # Newtonian acceleration
+        g = np.sum(G * masses_valid[:, None] * (r_vecs / r_mags[:, None]**3), axis=0)
+        
+        # Apply MOND modification if needed
+        if mode == "mond":
+            g_magnitude = np.linalg.norm(g)
+            g *= nu(g_magnitude * a0_inv) if g_magnitude > 0 else 1
+        
+        accelerations[i] = g
+    
+    """
+    # Compute system-level properties
+    total_mass = np.sum(masses)
+    center_of_mass = np.sum(masses[:, None] * positions, axis=0) / total_mass
+    total_force = np.sum(masses[:, None] * accelerations, axis=0)
+    
+    # T_1 and moment of inertia tensor
+    T_1 = np.sum(
+        masses[:, None] * np.cross(positions, accelerations), axis=0
+    )
+    inertia_tensor = np.sum(
+        masses[:, None, None] * np.einsum('ij,ik->ijk', positions, positions), axis=0
+    )
+    
+    print(center_of_mass)
+    print(total_force)
+    print(np.cross(center_of_mass, total_force))
+    
+    
+    T = T_1 - np.cross(center_of_mass, total_force)
+    print(T)
+    print(np.trace(inertia_tensor) * np.eye(2) - inertia_tensor)
+    B = np.linalg.solve(
+        np.trace(inertia_tensor) * np.eye(2) - inertia_tensor,
+        T
+    )
+    
+    
+    A = total_force / total_mass
+    
+    # Adjust accelerations for MOND
+    if mode == "mond":
+        for i in range(num_galaxies):
+            accelerations[i] -= A + np.cross(B, positions[i] - center_of_mass)
+    """
     return accelerations
 
 """
@@ -131,3 +152,5 @@ def runge_kutta4(galaxies, dt, mode="simple"):
         total_mass+=galaxy.mass
     
     return center_of_mass/total_mass
+
+
